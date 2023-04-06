@@ -1,0 +1,62 @@
+<script>
+function trapezoidalMotionProfile(startPoint, endPoint, maxVelocity, maxAcceleration) {
+  const distance = endPoint - startPoint;
+
+  // Calculate the time to accelerate to maximum velocity
+  const accelTime = maxVelocity / maxAcceleration;
+
+  // Calculate the distance traveled during acceleration
+  const accelDistance = 0.5 * maxAcceleration * Math.pow(accelTime, 2);
+
+  // Calculate the time to decelerate from maximum velocity
+  const decelTime = accelTime;
+
+  // Calculate the distance traveled during deceleration
+  const decelDistance = accelDistance;
+
+  // Calculate the distance traveled at maximum velocity
+  const constVelocityDistance = distance - accelDistance - decelDistance;
+
+  // Calculate the time spent at maximum velocity
+  const constVelocityTime = constVelocityDistance / maxVelocity;
+
+  // Calculate the total time for the motion profile
+  const totalTime = accelTime + decelTime + constVelocityTime;
+
+  // Create an array to hold the output objects
+  const output = [];
+
+  // Calculate the position, velocity, and acceleration at each time step
+  for (let t = 0; t <= totalTime; t += 0.01) {
+    let position, velocity, acceleration;
+
+    if (t < accelTime) {
+      // Accelerating
+      acceleration = maxAcceleration;
+      velocity = acceleration * t;
+      position = 0.5 * acceleration * Math.pow(t, 2);
+    } else if (t >= accelTime && t < (totalTime - decelTime)) {
+      // Constant velocity
+      acceleration = 0;
+      velocity = maxVelocity;
+      position = accelDistance + (maxVelocity * (t - accelTime));
+    } else {
+      // Decelerating
+      acceleration = -maxAcceleration;
+      velocity = maxVelocity + (acceleration * (totalTime - t));
+      position = endPoint - (0.5 * maxAcceleration * Math.pow((totalTime - t), 2));
+    }
+
+    // Add the output object to the output array
+    output.push({
+      time: t,
+      acceleration: acceleration,
+      velocity: velocity,
+      position: startPoint + position
+    });
+  }
+
+  return output;
+}
+console.log(trapezoidalMotionProfile(0,100,15,3))
+</script>
